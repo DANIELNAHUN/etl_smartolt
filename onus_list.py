@@ -8,6 +8,8 @@ import os
 import time
 import shutil
 import pandas as pd
+import numpy as np
+import pymysql
 
 load_dotenv()
 
@@ -53,12 +55,37 @@ def move_file(path_from,path_to,name_file):
     shutil.move(path_from,to)
     return to
 
+def connection_db_local():
+    conn = pymysql.connect(host=os.getenv("IP_SERVER_DATABASE"), database=os.getenv(
+        'BD_SERVER'), user=os.getenv('USER_SERVER'), passwd=os.getenv('PASSWORD_SERVER'))
+    return conn
+
 def save_database(file):
-    onus = pd.read_csv(file, header=0)
-    query_insert = ""
-    query_truncate = ""
-    print(onus)
-    print("Todo correcto")
+    df = pd.read_csv(file, header=0)
+    query_insert = "INSERT INTO onus(id_onus, onu_external_id, pon_type, sn, onu_type, name, olt, board, port, allocated_onu, zone, address, latitude, longitude, "\
+        "odb_splitter, mode, wan_mode, ip_address, subnet_mask, default_gateway, dns1, dns2, username, password, catv, administrative_status, auth_date, status, "\
+        "signal_onu, signal_1310, service_port, service_port_vlan, service_port_cvlan, service_port_svlan, service_port_tag_transform_mode, service_port_upload_speed, "\
+        "service_port_download_speed, fecha_insert, fecha_update) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    query_truncate = "TRUNCATE onus"
+    query_reset_id = "ALTER TABLE onus AUTO_INCREMENT = 1"
+    params = df.to_numpy().tolist()
+    params = [tuple(subparams) for subparams in params]
+
+    params = [tuple(None if isinstance(x, float) and np.isnan(x) else x for x in tupla) for tupla in params]
+    #Subir Datos a la DB Local
+    try:
+        conn = connection_db_local()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(query_truncate)
+                cur.execute(query_reset_id)
+                cur.executemany(query_insert, params)
+                conn.commit()
+            print("Success save in mysql")
+        finally:
+            conn.close()
+    except (pymysql.err.OperationalError, pymysql.err.InternalError) as e:
+        print(f"Error not save in mysql {e} ")
 
 def get_csv():
     driver = inicio_sesion()

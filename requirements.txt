@@ -3,3 +3,4 @@ selenium==4.8.0
 pandas
 openpyxl
 python-dotenv
+pymysql
