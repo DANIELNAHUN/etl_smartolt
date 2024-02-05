@@ -55,6 +55,8 @@ def move_file(path_from,path_to,name_file):
 
 def save_database(file):
     onus = pd.read_csv(file, header=0)
+    query_insert = ""
+    query_truncate = ""
     print(onus)
     print("Todo correcto")
 
