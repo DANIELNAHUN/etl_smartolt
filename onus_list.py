@@ -63,9 +63,9 @@ def connection_db_local():
 def save_database(file):
     df = pd.read_csv(file, header=0)
     query_insert = "INSERT INTO onus(onu_external_id, pon_type, sn, onu_type, name, olt, board, port, allocated_onu, zone, address, latitude, longitude, "\
-        "odb_splitter, mode, wan_mode, ip_address, subnet_mask, default_gateway, dns1, dns2, username, password, catv, administrative_status, auth_date, status, "\
-        "signal_onu, signal_1310, service_port, service_port_vlan, service_port_cvlan, service_port_svlan, service_port_tag_transform_mode, service_port_upload_speed, "\
-        "service_port_download_speed) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        "odb_splitter, odb_port, mode, wan_mode, ip_address, subnet_mask, default_gateway, dns1, dns2, username, password, catv, administrative_status, auth_date, status, "\
+        "signal_onu, signal_1310, signal_1490, distance, service_port, service_port_vlan, service_port_cvlan, service_port_svlan, service_port_tag_transform_mode, service_port_upload_speed, "\
+        "service_port_download_speed) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     query_truncate = "TRUNCATE onus"
     query_reset_id = "ALTER TABLE onus AUTO_INCREMENT = 1"
     params = df.to_numpy().tolist()
